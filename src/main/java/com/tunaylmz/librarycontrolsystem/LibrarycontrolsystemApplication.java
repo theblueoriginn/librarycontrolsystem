@@ -17,9 +17,6 @@ public class LibrarycontrolsystemApplication {
 
     public CommandLineRunner runQueries(LibraryRepository libraryRepository) {
         return args -> {
-            libraryRepository.save(new Book("Othello","Shakespeare",526));
-            Book bookOthello =  libraryRepository.findByTitle("Othello");
-            System.out.println(bookOthello.getAuthor());
 
         };
     }

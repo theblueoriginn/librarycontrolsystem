@@ -1,20 +1,31 @@
 package com.tunaylmz.librarycontrolsystem;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.annotation.*;
 
-@SpringBootApplication
 @RestController
+@RequestMapping("/api/books")
+
 public class MainController {
+    private final LibraryRepository libraryRepository;
+    private final BookService bookService;
+
+    public MainController(LibraryRepository libraryRepository, BookService bookService) {
+        this.libraryRepository = libraryRepository;
+        this.bookService = bookService;
+    }
+
     @GetMapping("/main")
     public String main() {
         return "Hello World";
     }
-    public void addBook(String title, String author, int pageCount) {
-        Book book = new Book(title,author,pageCount);
-
+    @PostMapping("/addBook")
+    public String addBook(@RequestParam  String title, @RequestParam String author,@RequestParam int pageCount) {
+       return bookService.saveBook(title,author,pageCount);
+    }
+    @GetMapping("/{title}")
+    public Book getBook(@PathVariable  String title) {
+       return bookService.getBookByTitle(title);
 
     }
 }
