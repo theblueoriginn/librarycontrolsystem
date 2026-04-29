@@ -3,6 +3,8 @@ package com.tunaylmz.librarycontrolsystem;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class Book {
 
@@ -10,11 +12,13 @@ public class Book {
     private String title;
     private String author;
     private int pageCount;
+    private LocalDateTime createdAt;
 
     public Book(String title, String author, int pageCount) {
         this.title = title;
         this.author = author;
         this.pageCount = pageCount;
+        this.createdAt = LocalDateTime.now();
     }
 
     public Book() {

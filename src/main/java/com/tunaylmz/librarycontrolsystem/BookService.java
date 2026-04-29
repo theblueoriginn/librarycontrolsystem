@@ -8,20 +8,31 @@ public class BookService {
     public BookService(LibraryRepository libraryRepository) {
         this.libraryRepository = libraryRepository;
     }
-    public String saveBook(String title, String author, int pageCount) {
+    public String saveBook(BookCreateDTO bookCreateDTO) {
 
-        if (libraryRepository.findByTitle(title) != null) {
+
+        if (libraryRepository.findByTitle(bookCreateDTO.title) != null) {
             return "Error: This Book Already Exists! ";
         }
-        if (pageCount <= 0) {
+        if (bookCreateDTO.pageCount <= 0) {
         return "Error: Page Count Must be greater than 0!";
         }
-        Book book = new Book(title,author,pageCount);
+
+        Book book = new Book(bookCreateDTO.title,bookCreateDTO.author, bookCreateDTO.pageCount);
+
+
         libraryRepository.save(book);
         return "Book Saved Succesfully: " + book.getTitle();
     }
-    public Book getBookByTitle(String title) {
-        return libraryRepository.findByTitle(title);
-    }
+    public BookViewDTO getBook(String  title) {
+        if (libraryRepository.findByTitle(title) == null) {
+            return null;
+        }
+        Book book = libraryRepository.findByTitle(title);
 
+        BookViewDTO bookViewDTO = new BookViewDTO(book.getTitle(),book.getAuthor());
+        return bookViewDTO;
+
+    }
+    //TODO AS A SERVIC
 }
