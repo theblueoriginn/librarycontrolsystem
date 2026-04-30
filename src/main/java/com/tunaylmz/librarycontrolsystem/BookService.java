@@ -1,6 +1,10 @@
 package com.tunaylmz.librarycontrolsystem;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BookService {
@@ -8,31 +12,45 @@ public class BookService {
     public BookService(LibraryRepository libraryRepository) {
         this.libraryRepository = libraryRepository;
     }
+   @Transactional
     public String saveBook(BookCreateDTO bookCreateDTO) {
 
+       if (libraryRepository.existsByTitle(bookCreateDTO.title)) {
+           throw new DataIntegrityViolationException("Title already exists");
 
-        if (libraryRepository.findByTitle(bookCreateDTO.title) != null) {
-            return "Error: This Book Already Exists! ";
-        }
-        if (bookCreateDTO.pageCount <= 0) {
-        return "Error: Page Count Must be greater than 0!";
-        }
+       }
 
-        Book book = new Book(bookCreateDTO.title,bookCreateDTO.author, bookCreateDTO.pageCount);
+            Book book = new Book(bookCreateDTO.title,bookCreateDTO.author, bookCreateDTO.pageCount);
+            libraryRepository.save(book);
+            libraryRepository.flush();
 
 
-        libraryRepository.save(book);
-        return "Book Saved Succesfully: " + book.getTitle();
+
+        return "Book Saved Succesfully.";
     }
     public BookViewDTO getBook(String  title) {
         if (libraryRepository.findByTitle(title) == null) {
-            return null;
-        }
+            //only pass title as message parameter, and handle it in  GlobalHandler.
+            throw new EmptyResultDataAccessException(title , 1);
+            }
+
         Book book = libraryRepository.findByTitle(title);
 
         BookViewDTO bookViewDTO = new BookViewDTO(book.getTitle(),book.getAuthor());
         return bookViewDTO;
 
     }
-    //TODO AS A SERVIC
+
+    String deleteBook(String  title) {
+        Book book =  libraryRepository.findByTitle(title);
+        if ( book == null) {
+            throw new EmptyResultDataAccessException(title, 1);
+        }
+        libraryRepository.delete(book);
+        return "Deleted book: " + title ;
+
+    }
+
+
+    //TODO AS A SERVICE
 }
